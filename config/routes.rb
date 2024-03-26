@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  root to: 'api/tasks#index'
+
   namespace :api do
     resources :tasks, only: [:index, :update, :create, :destroy] do
       member do
@@ -8,8 +10,9 @@ Rails.application.routes.draw do
       collection do
         get :overdue
         get :by_status, path: 'status/:status', action: :status
-        get :completed, action: :completed
+        get :completed
         get :statistics
+        get :priority_queue
       end
     end
     resources :users, only: [] do
