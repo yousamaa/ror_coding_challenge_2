@@ -13,9 +13,11 @@ class Api::TasksController < ApplicationController
   end
 
   def update
+    old_status = @task.status
+
     if @task.update(task_params)
-      if @task.status_was != 'completed' && @task.status_changed? && @task.status == 'completed'
-        @task.completed_at = Time.current
+      if old_status != 'completed' && old_status != @task.status && @task.status == 'completed'
+        @task.update(completed_at: Time.current)
       end
 
       render json: @task
@@ -42,7 +44,9 @@ class Api::TasksController < ApplicationController
     if params[:user_id].present?
       user = User.find_by_id(params[:user_id])
       if user.present?
-        @task.user_id = user.id
+        TaskAssignment.create(user_id: user.id, task_id: @task.id)
+        @task.update(status: 'in_progress')
+
         render json: "Task assigned to user"
       else
         render json: "user record not found"
@@ -54,7 +58,7 @@ class Api::TasksController < ApplicationController
 
   def progress
     if params[:progress].present?
-      @task.progress = params[:progress]
+      @task.update(progress: params[:progress])
 
       render json: "Progress Updated"
     else
@@ -64,12 +68,14 @@ class Api::TasksController < ApplicationController
 
   def overdue
     @overdue_tasks = Task.overdue
+
     render json: @overdue_tasks
   end
 
   def status
     if params[:status].present?
       @tasks_by_status = Task.by_status(status)
+
       render json: @tasks_by_status
     else
       render json: "Param missing status"
@@ -79,6 +85,7 @@ class Api::TasksController < ApplicationController
   def completed
     if params[:startDate].present? && params[:endDate].present?
       @completed_tasks = Task.completed_within_date_range(Date.parse(params[:startDate]), Date.parse(params[:endDate]))
+
       render json: @completed_tasks
     else
       render json: "Param missing startDate" unless params[:startDate].present?

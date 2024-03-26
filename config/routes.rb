@@ -15,7 +15,7 @@ Rails.application.routes.draw do
         get :priority_queue
       end
     end
-    resources :users, only: [] do
+    resources :users, only: [:create] do
       member do
         get :tasks
       end
