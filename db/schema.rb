@@ -27,9 +27,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_26_201138) do
     t.string "title", default: "", null: false
     t.string "description", default: "", null: false
     t.string "status"
-    t.string "priority"
+    t.integer "priority"
     t.integer "progress"
-    t.datetime "due_at", default: "2024-04-02 20:14:44", null: false
+    t.datetime "due_at", default: "2024-04-02 22:05:22", null: false
     t.datetime "started_at"
     t.datetime "completed_at"
     t.datetime "created_at", null: false
